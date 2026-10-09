@@ -85,6 +85,14 @@ class TransactionController extends Controller
             }
         }
 
+        // Customer validation per store
+        if ($request->customer_id) {
+            $customer = Customer::find($request->customer_id);
+            if (!$customer || $customer->store_id != $storeId) {
+                return redirect()->back()->withInput()->with('error', 'Pelanggan tidak valid untuk toko ini.');
+            }
+        }
+
         $itemsData = $request->items;
 
         // Aggregate product quantities to handle duplicate product entries safely
@@ -109,6 +117,11 @@ class TransactionController extends Controller
             // Ensure product belongs to the store
             if ($product->store_id != $storeId) {
                 return redirect()->back()->withInput()->with('error', "Produk {$product->name} tidak valid untuk toko ini.");
+            }
+
+            // Ensure product is active
+            if (!$product->is_active) {
+                return redirect()->back()->withInput()->with('error', "Produk {$product->name} saat ini sedang dinonaktifkan.");
             }
 
             // Check stock

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -71,11 +72,36 @@ class ProductApiController extends Controller
      */
     public function store(Request $request)
     {
-        $storeId = $request->store_id;
+        $user = auth()->user();
+        $storeId = $user->role === 'owner' ? $request->store_id : $user->store_id;
+
+        // Validasi otorisasi multi-tenancy
+        if ($user->role === 'owner') {
+            $store = Store::find($storeId);
+            if (!$store || $store->owner_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses ke toko ini.'
+                ], 403);
+            }
+        } else {
+            // Admin hanya boleh membuat produk untuk toko yang ditugaskan kepadanya
+            if ($request->has('store_id') && $request->store_id != $user->store_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses ke toko ini.'
+                ], 403);
+            }
+        }
 
         $validator = Validator::make($request->all(), [
             'store_id' => 'required|exists:stores,id',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => [
+                'required',
+                Rule::exists('categories', 'id')->where(function ($query) use ($storeId) {
+                    return $query->where('store_id', $storeId);
+                })
+            ],
             'name' => [
                 'required',
                 'string',
@@ -106,7 +132,7 @@ class ProductApiController extends Controller
         }
 
         $product = Product::create([
-            'store_id' => $request->store_id,
+            'store_id' => $storeId,
             'category_id' => $request->category_id,
             'name' => $request->name,
             'price' => $request->price,
@@ -137,11 +163,36 @@ class ProductApiController extends Controller
             ], 404);
         }
 
-        $storeId = $request->input('store_id', $product->store_id);
+        $user = auth()->user();
+        if ($user->role === 'owner') {
+            if ($product->store->owner_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses ke produk ini.'
+                ], 403);
+            }
+        } else {
+            // Admin hanya boleh mengedit produk di tokonya sendiri
+            if ($product->store_id !== $user->store_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses ke produk ini.'
+                ], 403);
+            }
+        }
+
+        $storeId = $user->role === 'owner' 
+            ? $request->input('store_id', $product->store_id) 
+            : $product->store_id;
 
         $validator = Validator::make($request->all(), [
             'store_id' => 'nullable|exists:stores,id',
-            'category_id' => 'nullable|exists:categories,id',
+            'category_id' => [
+                'nullable',
+                Rule::exists('categories', 'id')->where(function ($query) use ($storeId) {
+                    return $query->where('store_id', $storeId);
+                })
+            ],
             'name' => [
                 'nullable',
                 'string',
@@ -166,7 +217,10 @@ class ProductApiController extends Controller
             ], 422);
         }
 
-        $data = $request->only(['store_id', 'category_id', 'name', 'price', 'stock', 'is_active']);
+        $data = $request->only(['category_id', 'name', 'price', 'stock', 'is_active']);
+        if ($user->role === 'owner' && $request->has('store_id')) {
+            $data['store_id'] = $request->store_id;
+        }
 
         if ($request->input('clear_image') == '1') {
             if ($product->image) {
@@ -202,6 +256,24 @@ class ProductApiController extends Controller
                 'success' => false,
                 'message' => 'Produk tidak ditemukan.'
             ], 404);
+        }
+
+        $user = auth()->user();
+        if ($user->role === 'owner') {
+            if ($product->store->owner_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses ke produk ini.'
+                ], 403);
+            }
+        } else {
+            // Admin hanya boleh menghapus produk di tokonya sendiri
+            if ($product->store_id !== $user->store_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses ke produk ini.'
+                ], 403);
+            }
         }
 
         if ($product->image) {

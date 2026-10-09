@@ -164,7 +164,7 @@ class DatabaseSeeder extends Seeder
                 for ($txIndex = 1; $txIndex <= $txCount; $txIndex++) {
                     $customer = $customers->random();
                     $discountPercent = rand(0, 4) === 0 ? 10 : 0; // 20% chance of 10% discount
-                    $taxPercent = 11; // 11% PPN is standard
+                    $taxPercent = 0; // 0% PPN default
 
                     // Generate unique invoice number
                     $invoiceNumber = 'INV-' . $date->format('Ymd') . '-' . strtoupper(substr(uniqid(), -6));

@@ -86,7 +86,7 @@ class OwnerUserController extends Controller
         $stores = Store::where('owner_id', auth()->id())->get();
 
         // pastikan user yang akan diedit bertugas di salah satu toko milik owner ini
-        if ($user->store_id && !$stores->contains('id', $user->store_id)) {
+        if (!$user->store_id || !$stores->contains('id', $user->store_id)) {
             abort(403);
         }
 
@@ -106,7 +106,7 @@ class OwnerUserController extends Controller
 
         // pastikan user yang akan diupdate bertugas di salah satu toko milik owner ini
         $stores = Store::where('owner_id', auth()->id())->get();
-        if ($user->store_id && !$stores->contains('id', $user->store_id)) {
+        if (!$user->store_id || !$stores->contains('id', $user->store_id)) {
             abort(403);
         }
 
@@ -155,7 +155,7 @@ class OwnerUserController extends Controller
 
         // pastikan user yang akan dihapus bertugas di salah satu toko milik owner ini
         $stores = Store::where('owner_id', auth()->id())->get();
-        if ($user->store_id && !$stores->contains('id', $user->store_id)) {
+        if (!$user->store_id || !$stores->contains('id', $user->store_id)) {
             abort(403);
         }
 
@@ -175,7 +175,7 @@ class OwnerUserController extends Controller
 
         // pastikan user yang akan direset bertugas di salah satu toko milik owner ini
         $stores = Store::where('owner_id', auth()->id())->get();
-        if ($user->store_id && !$stores->contains('id', $user->store_id)) {
+        if (!$user->store_id || !$stores->contains('id', $user->store_id)) {
             abort(403);
         }
 

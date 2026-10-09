@@ -154,7 +154,7 @@
                             </div>
                             <div class="space-y-1">
                                 <label for="tax_percent" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pajak PPN (%)</label>
-                                <input type="number" id="tax_percent" min="0" max="100" value="11" class="w-full rounded-xl border-slate-200 text-xs text-slate-750">
+                                <input type="number" id="tax_percent" min="0" max="100" value="0" class="w-full rounded-xl border-slate-200 text-xs text-slate-750">
                             </div>
                         </div>
 

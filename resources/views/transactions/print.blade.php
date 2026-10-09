@@ -113,7 +113,7 @@
             </div>
             <!-- Metric 4: Total PPN -->
             <div class="bg-slate-50/50 border border-slate-100 rounded-2xl p-5 space-y-1">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Pajak PPN (11%)</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Pajak PPN</span>
                 <span class="block text-xl font-extrabold text-slate-700 font-mono">Rp {{ number_format($totalTax, 0, ',', '.') }}</span>
             </div>
         </div>
