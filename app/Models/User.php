@@ -25,7 +25,6 @@ class User extends Authenticatable
         'password',
         'role_id',
         'store_id',
-        'role', // support setter compatibility
     ];
 
     /**

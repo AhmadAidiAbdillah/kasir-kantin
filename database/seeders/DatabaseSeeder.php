@@ -167,7 +167,7 @@ class DatabaseSeeder extends Seeder
                     $taxPercent = 11; // 11% PPN is standard
 
                     // Generate unique invoice number
-                    $invoiceNumber = 'INV-' . $date->format('Ymd') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
+                    $invoiceNumber = 'INV-' . $date->format('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
 
                     $transaction = Transaction::create([
                         'store_id' => $store->id,

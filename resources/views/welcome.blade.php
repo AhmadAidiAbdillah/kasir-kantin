@@ -67,6 +67,12 @@
                         <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/10 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200">
                             Buka Dashboard
                         </a>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="text-xs font-bold text-slate-400 hover:text-rose-500 transition-colors">
+                                Logout
+                            </button>
+                        </form>
                     @else
                         <a href="{{ route('login') }}" class="text-xs font-bold text-slate-700 hover:text-indigo-600 transition-colors">
                             Login
@@ -98,6 +104,12 @@
                     <a href="{{ route('dashboard') }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-all">
                         Buka Dashboard
                     </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl text-base font-bold text-rose-500 border border-rose-100 hover:bg-rose-50 transition-all">
+                            Logout
+                        </button>
+                    </form>
                 @else
                     <a href="{{ route('login') }}" class="w-full inline-flex items-center justify-center px-5 py-3 rounded-xl text-base font-bold text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all">
                         Login
@@ -109,6 +121,17 @@
             </div>
         </div>
     </header>
+
+    <!-- Session Alerts -->
+    @if(session('error'))
+        <div id="session-alert" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[60] bg-rose-500 text-white px-6 py-3 rounded-xl shadow-lg shadow-rose-500/20 flex items-center gap-3 animate-fade-in-up">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="text-sm font-semibold">{{ session('error') }}</span>
+            <button onclick="document.getElementById('session-alert').remove()" class="ml-4 text-white/80 hover:text-white">
+                &times;
+            </button>
+        </div>
+    @endif
 
     <!-- Hero Section -->
     <section id="home" class="relative overflow-hidden py-24 lg:py-36 bg-gradient-to-b from-indigo-50/40 via-white to-slate-50">

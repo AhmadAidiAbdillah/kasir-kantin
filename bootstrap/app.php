@@ -21,5 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'CSRF token mismatch.'], 419);
+            }
+            return redirect()->back()->withInput($request->except('_token'))->with('error', 'Sesi Anda telah berakhir karena terlalu lama diam. Silakan coba lagi.');
+        });
     })->create();

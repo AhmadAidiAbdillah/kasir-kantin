@@ -44,8 +44,8 @@ Route::middleware('auth')->group(function () {
 // 🔹 Route khusus OWNER
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'owner'])->name('dashboard');
-    Route::resource('stores', StoreController::class);
-    Route::resource('users', OwnerUserController::class);
+    Route::resource('stores', StoreController::class)->except(['show']);
+    Route::resource('users', OwnerUserController::class)->except(['show']);
     Route::patch('users/{user}/reset', [OwnerUserController::class, 'resetPassword'])->name('users.reset');
 });
 
@@ -71,13 +71,13 @@ Route::middleware(['auth', 'role:owner,admin,kasir'])->group(function () {
 
 // 🔹 Master Data: Kategori & Produk - Bisa diakses oleh Owner dan Admin
 Route::middleware(['auth', 'role:owner,admin'])->group(function () {
-    Route::resource('categories', CategoryController::class);
-    Route::resource('products', ProductController::class);
+    Route::resource('categories', CategoryController::class)->except(['show']);
+    Route::resource('products', ProductController::class)->except(['show']);
 });
 
 // 🔹 Master Data: Pelanggan - Bisa diakses oleh Owner, Admin, dan Kasir
 Route::middleware(['auth', 'role:owner,admin,kasir'])->group(function () {
-    Route::resource('customers', CustomerController::class);
+    Route::resource('customers', CustomerController::class)->except(['show']);
 });
 
 // 🔹 Route bawaan Breeze (login, register, dll)
